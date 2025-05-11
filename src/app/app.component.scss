@@ -1,0 +1,34 @@
+.container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.now-playing img,
+.queue img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.now-playing mat-card-content,
+.queue mat-card-content {
+  text-align: center;
+}
+
+.search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-box {
+  width: 100%;
+}
+
+mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

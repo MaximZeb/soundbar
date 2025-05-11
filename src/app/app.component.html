@@ -1,0 +1,63 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">🎧 SoundBar</mat-toolbar>
+
+<div class="container">
+  <!-- Текущая песня -->
+  <mat-card class="now-playing">
+    <ng-container *ngIf="currentSong; else noSong">
+      <img mat-card-image [src]="currentSong.cover" alt="cover" />
+      <mat-card-content>
+        <h3>Сейчас играет</h3>
+        <p>{{ currentSong.title }}</p>
+      </mat-card-content>
+    </ng-container>
+    <ng-template #noSong>
+      <mat-card-content>
+        <p>Ничего не играет</p>
+      </mat-card-content>
+    </ng-template>
+  </mat-card>
+
+  <!-- Очередь -->
+  <mat-card class="queue">
+    <mat-card-content>
+      <h3>Очередь</h3>
+      <ng-container *ngIf="queue.length; else emptyQueue">
+        <mat-list>
+          <mat-list-item *ngFor="let song of queue">
+            <img matListAvatar [src]="song.cover" alt="cover" />
+            <h4 matLine>{{ song.title }}</h4>
+          </mat-list-item>
+        </mat-list>
+      </ng-container>
+      <ng-template #emptyQueue>
+        <p>Очередь пуста</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Поиск -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Поиск песни</mat-label>
+      <input matInput [formControl]="searchControl" />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="onSearchClick()">Найти</button>
+
+    <mat-list *ngIf="filteredSongs.length">
+      <mat-list-item *ngFor="let song of filteredSongs">
+        <img matListAvatar [src]="song.cover" alt="cover" />
+        <div matLine>{{ song.title }}</div>
+
+        <ng-container *ngIf="loadingSongId === song.id; else addBtn">
+          <mat-progress-spinner diameter="24" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+        </ng-container>
+
+        <ng-template #addBtn>
+          <button mat-icon-button color="accent" (click)="addToQueue(song.id)">
+            <mat-icon>queue_music</mat-icon>
+          </button>
+        </ng-template>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>
