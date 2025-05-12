@@ -1,31 +1,61 @@
-<mat-toolbar color="primary" class="mat-elevation-z4">🎧 SoundBar</mat-toolbar>
-
+<mat-toolbar class="header" color="primary" class="mat-elevation-z4">
+  🎧 SoundBar
+  <button style="width: 100px; height: 30px;" *ngIf="!isAuthorized" (click)="show()">
+    Войти
+  </button>
+</mat-toolbar>
 <div class="container">
+  <!-- Авторизация -->
+  <ng-container *ngIf="showFormAuth">
+    <mat-card *ngIf="!isAuthorized" class="auth-form">
+    <mat-card-title>Вход</mat-card-title>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-form-field appearance="outline">
+        <mat-label>Логин</mat-label>
+        <input matInput formControlName="username" required />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Пароль</mat-label>
+        <input matInput type="password" formControlName="password" required />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">Войти</button>
+    </form>
+    </mat-card>
+  </ng-container>
+  
+
+  <!-- Форма добавления песни (только авторизованным) -->
+  <mat-card *ngIf="isAuthorized" class="add-form">
+    <mat-card-title>Добавить песню</mat-card-title>
+    <form [formGroup]="addSongForm" (ngSubmit)="addSong()">
+      <mat-form-field appearance="outline">
+        <mat-label>Название</mat-label>
+        <input matInput formControlName="title" required />
+      </mat-form-field>
+      <button mat-raised-button color="accent" type="submit">Добавить</button>
+    </form>
+  </mat-card>
+
   <!-- Текущая песня -->
   <mat-card class="now-playing">
-    <ng-container *ngIf="currentSong; else noSong">
-      <img mat-card-image [src]="currentSong.cover" alt="cover" />
-      <mat-card-content>
-        <h3>Сейчас играет</h3>
-        <p>{{ currentSong.title }}</p>
-      </mat-card-content>
-    </ng-container>
-    <ng-template #noSong>
-      <mat-card-content>
+    <mat-card-content>
+      <h3>Сейчас играет</h3>
+      <p *ngIf="currentSong; else noSong">{{ currentSong.title }}</p>
+      <ng-template #noSong>
         <p>Ничего не играет</p>
-      </mat-card-content>
-    </ng-template>
+      </ng-template>
+    </mat-card-content>
   </mat-card>
 
   <!-- Очередь -->
   <mat-card class="queue">
     <mat-card-content>
-      <h3>Очередь</h3>
+      <h3>Стоимость песни 20 рублей</h3>
+      <h3>Следующие песни</h3>
       <ng-container *ngIf="queue.length; else emptyQueue">
         <mat-list>
-          <mat-list-item *ngFor="let song of queue">
-            <img matListAvatar [src]="song.cover" alt="cover" />
-            <h4 matLine>{{ song.title }}</h4>
+          <mat-list-item *ngFor="let song of queue; let i = index">
+            <span>{{ i + 1 }}. {{ song.title }}</span>
           </mat-list-item>
         </mat-list>
       </ng-container>
@@ -44,17 +74,16 @@
     <button mat-raised-button color="primary" (click)="onSearchClick()">Найти</button>
 
     <mat-list *ngIf="filteredSongs.length">
-      <mat-list-item *ngFor="let song of filteredSongs">
-        <img matListAvatar [src]="song.cover" alt="cover" />
-        <div matLine>{{ song.title }}</div>
+      <mat-list-item class="search-container" *ngFor="let song of filteredSongs">
+        <span>{{ song.title }}</span>
 
         <ng-container *ngIf="loadingSongId === song.id; else addBtn">
           <mat-progress-spinner diameter="24" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
         </ng-container>
 
         <ng-template #addBtn>
-          <button mat-icon-button color="accent" (click)="addToQueue(song.id)">
-            <mat-icon>queue_music</mat-icon>
+          <button mat-raised-button color="accent" (click)="addToQueue(song)">
+            Заказать
           </button>
         </ng-template>
       </mat-list-item>
